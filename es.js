@@ -7,7 +7,10 @@ const puppeteer = require('puppeteer');
 
     // await page.$x() returns array of ElementHandle
     const featureArticles = (await page.$x('//h2'));
-    //c
+    
+    //ciao
+    
+    console.log("ciao");
 
     for(var i=0; i<featureArticles.length; i++) {
 
