@@ -59,7 +59,7 @@ let bookingUrl = 'file:///Users/salvatore/Desktop/Booking.com%20%20Hotel%20Cosen
 
 	hotels.forEach((hotelElement) => {
 		console.log(hotelElement.name + " " + hotelElement.bui);
-	})
+	});
 
 //	console.dir(hotels);
 	await browser.close();
