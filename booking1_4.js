@@ -7,6 +7,10 @@ const puppeteer = require('puppeteer');
 
 let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI46AdIM1gEaHGIAQGYARS4AQfIAQ_YAQHoAQGIAgGoAgM;sid=9e5a2f72fb374b24b8be4033628b9dd1;keep_landing=1&sb_price_type=total&';
 (async () => {
+
+	//let me to listen from console, also within in 'evaluate()' function
+//	page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+
 	const browser = await puppeteer.launch({ headless: false });
 	//wait for opening new page
 	const page = await browser.newPage();
@@ -15,10 +19,18 @@ let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI
 
 
 	// Type into search box.
-	await page.type('#ss', 'Cosenza');
+	await page.type('#ss', 'Cosenza',{delay: 100}); // Types slower, like a user
 
-	//let me to listen from console, also within in 'evaluate()' function
-//	page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+
+	// Wait for suggest overlay to appear and click "show all results".
+	const allResultsSelector = '.sb-searchbox__button';
+	await page.waitForSelector(allResultsSelector);
+	await page.click(allResultsSelector);
+
+	// Wait for the results page to load and display the results.
+	const resultsSelector = '#hotellist_inner';
+	await page.waitForSelector(resultsSelector);
+
 
 
 	/*    start to select elements from the page    */
@@ -66,6 +78,6 @@ let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI
 	})
 
 //	console.dir(hotels);
-//	await browser.close();
+	await browser.close();
 
 })();
