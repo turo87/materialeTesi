@@ -11,7 +11,7 @@ let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI
 	//let me to listen from console, also within in 'evaluate()' function
 //	page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-	const browser = await puppeteer.launch({ headless: true }); // headless mode disabled
+	const browser = await puppeteer.launch({ headless: false });
 	//wait for opening new page
 	const page = await browser.newPage();
 	//wait for goto url
@@ -19,7 +19,8 @@ let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI
 
 
 	// Type into search box.
-	await page.type("#ss", 'Cosenza'); // Types slower, like a user
+	await page.type('#ss', 'Cosenza',{delay: 100}); // Types slower, like a user
+
 
 	// Wait for suggest overlay to appear and click "show all results".
 	const allResultsSelector = '.sb-searchbox__button';
@@ -36,7 +37,7 @@ let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI
 
 
 	//selection <Promise<Array<ElementHandle>>>
-	const hotelsIds = (await page.$x("//div[@data-hotelid]"));
+	const hotelsIds = (await page.$x("//div/@data-hotelid"));
 //	console.log("lunghezza array di tutti gli hotel trovati: " + hotelsIds.length);
 
 	var hotels = [];
@@ -46,14 +47,19 @@ let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI
 
 		var hotelJson = {};
 
-		var nameFeature = await hotelsIds[i].$x("./descendant-or-self::span[@class='sr-hotel__name\n'][1]");
+		var id = await page.evaluate(el => {
+			return el.textContent;
+		},hotelsIds[i]);
+//		console.log(id);
+
+		var nameFeature = await page.$x("//span[@class='sr-hotel__name\n']");
 		var name = await page.evaluate(el => {
 			return el.textContent;
-		},nameFeature[0]);
+		},nameFeature[i]);
 //		console.log(name);
 		hotelJson.name = name;
 
-		var buiReviewFeature = await await hotelsIds[i].$x("./descendant-or-self::div[@class='bui-review-score__badge'][1]");
+		var buiReviewFeature = await page.$x("//div[@data-hotelid='" + id +"']//div[@class='bui-review-score__badge']");
 		try {
 			var buiReview = await page.evaluate(el => {
 				return el.textContent;
