@@ -47,7 +47,7 @@ let bookingUrl = 'https://www.booking.com/searchresults.it.html?label=gen173nr-1
 				return el.textContent;
 			},hrefFeature[0]);
 			var link = "https://www.booking.com"+h;
-//			console.log(link);
+			console.log(link);
 			const browser2 = await puppeteer.launch({ headless: true }); // headless mode disabled
 
 			//wait for opening new page
