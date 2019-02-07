@@ -31,8 +31,8 @@ let bookingUrl = 'https://www.booking.com/index.it.html?label=gen173nr-1BCAEoggI
 	await page.waitForSelector(resultsSelector);
 
 	//selection <Promise<Array<ElementHandle>>> within page
-	const hotelsIds = (await page.$x("//div[@data-hotelid]"));
-//	console.log("lunghezza array di tutti gli hotel trovati: " + hotelsIds.length);
+	const hotelsIds = (await page.$$('[data-hotelid]'));
+	console.log("lunghezza array di tutti gli hotel trovati: " + hotelsIds.length);
 
 	var hotels = [];
 
