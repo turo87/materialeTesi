@@ -2,9 +2,9 @@
  * 
  */
 
-async function extract(page,feature) {
+async function evaluate(page,feature) {
 	return await page.evaluate(el => {
 		return el.textContent;
 	},feature);
 }
-module.exports.extract = extract;
+module.exports.evaluate = evaluate;
