@@ -6,7 +6,7 @@ var inputDeparse = require('./inputDeparser.js');
 var browserOpener = require('./browserOpener.js');
 var pageOpener = require('./pageOpener.js');
 var elementSelector = require('./elementSelector.js');
-var outputExtractor = require('./outputExtractor.js');
+var outputPrinter = require('./outputPrinter.js');
 var browserCloser = require('./browserCloser');
 
 const inputJson = [
@@ -23,7 +23,7 @@ let obj = inputDeparse.scrape(inputJson);
 	let openBrowser = await browserOpener.open();
 	let openPage = await pageOpener.open(openBrowser,url);
 	let elementSelection =  await elementSelector.selection(obj,openPage);
-	let elementExtraction =  outputExtractor.extract(elementSelection);
+	let elementExtraction =  outputPrinter.print(elementSelection);
 	let closeBrowser = await browserCloser.close(openBrowser);
 })();
 

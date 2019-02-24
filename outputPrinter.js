@@ -2,8 +2,7 @@
  * 
  */
 
-async function extract(obj) {
-//	await console.dir(obj);
+async function print(obj) {
 	var keys = Object.keys(obj);
 	for(var j in keys) {
 		var key = keys[j];
@@ -11,4 +10,4 @@ async function extract(obj) {
 		console.log(key + " : " + value.toString());
 	}
 }
-module.exports.extract = extract;
+module.exports.print = print;
