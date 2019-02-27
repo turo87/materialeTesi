@@ -31,6 +31,7 @@ async function main(inputJson) {
 		if(isScraplNode(input[i]))
 			output = await evalNode(input[i].scrape,context);
 	}
+	await browserCloser.close(context.page);
 	return output;
 }
 async function evalActionNode(node,context){
