@@ -4,7 +4,6 @@
 var browserOpener = require('./browserOpener.js');
 var pageOpener = require('./pageOpener.js');
 var browserCloser = require('./browserCloser');
-var stringConstructor = "test".constructor;
 var arrayConstructor = [].constructor;
 var objectConstructor = {}.constructor;
 
@@ -40,8 +39,7 @@ async function evalActionNode(node,context){
 	context.currentNode = await pageOpener.open(context.page,url);
 }
 async function evalNode(node,context) {
-	if (node==null) {
-		console.log(null);
+	if (node === null) {
 		return null;
 	}
 	if(isObject(node)) {
