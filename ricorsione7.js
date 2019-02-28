@@ -65,7 +65,7 @@ async function evalObject(node,context) {
 	var keys = Object.keys(node);
 	for(var j in keys) {
 		var key = keys[j];
-		var value = node[key].toString();
+//		var value = node[key].toString();
 		out[key] = await evalNode(node[key],context);
 	}
 	return out;
