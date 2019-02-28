@@ -27,7 +27,7 @@ async function main(inputJson) {
 		if(isActionNode(input[i]))
 			await evalActionNode(input[i],context);			
 		if(isScraplNode(input[i]))
-			output = await evalNode(input[i],context);
+			output = await evalNode(input[i].scrape,context);
 	}
 	await browserCloser.close(context.page);
 	return output;
@@ -58,8 +58,8 @@ async function evalArray(node,context) {
 	return array;
 }
 async function evalObject(node,context) {
-	console.log("evalObject:");
-	console.log(node);
+//	console.log("evalObject:");
+//	console.log(node);
 	var out = {};
 //	ricorsione su ogni key
 	var keys = Object.keys(node);
@@ -71,8 +71,8 @@ async function evalObject(node,context) {
 	return out;
 }
 async function evalAtomicValue(selector,context) {
-	console.log("isAtomicValue:");
-	console.log(selector);
+//	console.log("isAtomicValue:");
+//	console.log(selector);
 	var c = await context.currentNode.$x(selector);
 	var d = await context.currentNode.evaluate(el => {
 		return el.textContent;
@@ -80,23 +80,23 @@ async function evalAtomicValue(selector,context) {
 	return d;
 }
 function isObject(node) {
-	console.log("isObject:");
-	console.log(node);
+//	console.log("isObject:");
+//	console.log(node);
 	if (node.constructor === objectConstructor) {
-		console.log("YES");
+//		console.log("YES");
 		return true;
 	}
-	console.log("NO");
+//	console.log("NO");
 	return false;
 }
 function isArray(node) {
-	console.log("isArray:");
-	console.log(node);
+//	console.log("isArray:");
+//	console.log(node);
 	if (node.constructor === arrayConstructor) {
-		console.log("Yes");
+//		console.log("Yes");
 		return true;
 	}
-	console.log("NO");
+//	console.log("NO");
 	return false;
 }
 function isScraplNode(obj) {
