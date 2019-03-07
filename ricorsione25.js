@@ -72,7 +72,7 @@ async function evalNode(node,currentContext) {
 
 async function evalForEach(node,currentContext) {
 	var a = [];	//array degli elementi estratti 
-	var values = Object.values(node);	//dati dal nodo, e cioè i valore di '_forEach_' e '_extract_'
+	var values = Object.values(node);	//dati dal nodo, e cioè i valori di '_forEach_' e '_extract_'
 	var _for = values[0];	//xpath nodo padre
 	var _extract = values[1];	//oggetto '_extract_'
 	var arrayElements = await currentContext.currentNode.$x(_for);	//query dell'elemento padre sulla pagina
