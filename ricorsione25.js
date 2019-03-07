@@ -72,20 +72,20 @@ async function evalNode(node,currentContext) {
 
 async function evalForEach(node,currentContext) {
 	var a = [];							//	array degli elementi estratti 
-	var values = Object.values(node);	//	dati dal nodo, e cioè il valore di '_forEach_' e '_extract_'
+	var values = Object.values(node);	//	dati dal nodo, e cioè i valore di '_forEach_' e '_extract_'
 	var _for = values[0];				//	xpath nodo padre
 	var _extract = values[1]; 			//	oggetto '_extract_'
 	var arrayElements = await currentContext.currentNode.$x(_for);	// query dell'elemento padre sulla pagina
 //	console.log(arrayElements.length);
 	for(var i=0; i<arrayElements.length; i++) {		//	itero tutti i nodi della pagina ottenuti tramite la query e li valuto
-		var context1 = {};							//	1.per ogni nodo della pagina creo un nuovo contento su cui valutare 
-		context1.currentNode = arrayElements[i];	//	2.aggiorno l'emento nodo della pagina
+		var context1 = {};							//	1.per ogni nodo della pagina creo un nuovo contesto su cui valutare 
+		context1.currentNode = arrayElements[i];	//	2.aggiorno l'emento nodo del contesto
 		context1.page = currentContext.page;		//	3.la pagina rimane la stessa
 		contexts.push(context1);					//	4.inserisco il contesto nella pila 
 		currentContext = contexts[contexts.length-1];	//	5.aggiorno il contesto corrente
-		var c = await evalNode(_extract,currentContext);//	6.richiamo la 'evalNode' che valuterà il nodo passandgli il contesto corrente
+		var c = await evalNode(_extract,currentContext);//	6.richiamo la 'evalNode' che valuterà il nodo passandogli il contesto corrente
 		a.push(c);										//	7.inserisco l'estratto nell' array
-		contexts.pop();									//	8.ho finito estraggo l'ultimo contesto che non mi serve più
+		contexts.pop();									//	8.ho finito, estraggo l'ultimo contesto che non mi serve più
 		currentContext = contexts[contexts.length-1];	//	9.aggiorno il contesto a quello precedente
 	}
 	return await a;
