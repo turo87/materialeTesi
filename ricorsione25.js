@@ -93,9 +93,9 @@ async function evalForEach(node,currentContext) {
 async function evalArray(node,currentContext) {
 //	console.log("evalArray:");
 //	console.log(node);
-	if(isSelectorStringArray(node)) {
-//		console.log("evalArry isSelector String:");
-//		console.log(node);
+	if(isSelectorStringArray(node)) {							//	verifico che si tratti di una struttura di tipo 'selettore Array'
+//		console.log("evalArry isSelector String:");				//	in questo caso avrò un unica stringa all'interno dell'array e quindi
+//		console.log(node);										//	valuto direttamente il valore atomico all'interno del contesto apportuno
 		var out = [];
 		var array = await currentContext.currentNode.$x(node);
 		for(var j=0; j<array.length; j++) {
@@ -111,8 +111,8 @@ async function evalArray(node,currentContext) {
 		}
 		return await out;
 	}
-	else {
-		var out = [];
+	else {														//	se non è un 'selettore Array', allora avrò un array di valori atomici 
+		var out = [];											// da valutare all'interno dello stesso contesto
 		for(var j=0; j<node.length; j++) {
 			var array = await currentContext.currentNode.$x(node[j]);
 			var context1 = {};
