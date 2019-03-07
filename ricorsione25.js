@@ -1,21 +1,27 @@
 /**
  * 
  */
+
+//--- import funzioni di supporto
 var browserOpener = require('./browserOpener.js');
 var pageOpener = require('./pageOpener.js');
 var browserCloser = require('./browserCloser');
 var testCase = require('./testCase.js');
-var arrayConstructor = [].constructor;
-var objectConstructor = {}.constructor;
-var browser;
-var contexts = [];
-var currentContext = {};
-const test = testCase.getTestCase();	//Input: Array INP
-let output;	//Output: Object OUT
+//---
 
-async function main(input) {
+//--- variabili utili per il riconoscimento del tipo di oggetti (array, oggetto(JSON))
+var arrayConstructor = [].constructor; 
+var objectConstructor = {}.constructor;
+//---
+
+var browser; 	// browser (chromium, o altro) che verrà utilizzato per l'apertura delle pagine
+var contexts = [];	//	context contiene la pila di contesti(tipo la pagina, oppure un nodo della pagina), l'ultimo della pila sarà il contesto di valutazione corrente
+var currentContext = {}; // contesto inziale di partenza
+const test = testCase.getTestCase();	//Input: Array di input importati dalla funzione di supporto testCase
+let output;	//Output: oggetto terminale restituito
+
+async function start(input) {
 	output = {};
-//	context contiene il contesto di valutazione corrente, tipo la pagina
 	for(var i=0; i<input.length; i++) {
 		if(isActionNode(input[i]))
 			await evalActionNode(input[i],currentContext);			
@@ -24,13 +30,20 @@ async function main(input) {
 	}
 	return output;
 }
+
+//valuta il tipo di azione dell' oggetto 'node'
 async function evalActionNode(node,currentContext) {
 	let url = node.open;
 	currentContext.page = await pageOpener.open(browser,url);
 	currentContext.currentNode = currentContext.page;
 	contexts.push(currentContext);
 }
+
+//se l'oggetto 'node' non è di tipo azione valuto il tipo di oggetto
 async function evalNode(node,currentContext) {
+
+	//	identifico il tipo di nodo e richiamo la funzione opportuna per il suo tipo 
+
 	if (node === null) {
 		return null;
 	}
@@ -58,22 +71,22 @@ async function evalNode(node,currentContext) {
 }
 
 async function evalForEach(node,currentContext) {
-	var a = [];
-	var values = Object.values(node);
-	var _for = values[0];
-	var arrayElements = await currentContext.currentNode.$x(_for);
+	var a = [];							//	array degli elementi estratti 
+	var values = Object.values(node);	//	dati dal nodo, e cioè il valore di '_forEach_' e '_extract_'
+	var _for = values[0];				//	xpath nodo padre
+	var _extract = values[1]; 			//	oggetto '_extract_'
+	var arrayElements = await currentContext.currentNode.$x(_for);	// query dell'elemento padre sulla pagina
 //	console.log(arrayElements.length);
-	var _extract = values[1];
-	for(var i=0; i<arrayElements.length; i++) {
-		var context1 = {};
-		context1.currentNode = arrayElements[i];
-		context1.page = currentContext.page;
-		contexts.push(context1);
-		currentContext = contexts[contexts.length-1];
-		var c = await evalNode(_extract,currentContext);
-		a.push(c);
-		contexts.pop();
-		currentContext = contexts[contexts.length-1];
+	for(var i=0; i<arrayElements.length; i++) {		//	itero tutti i nodi della pagina ottenuti tramite la query e li valuto
+		var context1 = {};							//	1.per ogni nodo della pagina creo un nuovo contento su cui valutare 
+		context1.currentNode = arrayElements[i];	//	2.aggiorno l'emento nodo della pagina
+		context1.page = currentContext.page;		//	3.la pagina rimane la stessa
+		contexts.push(context1);					//	4.inserisco il contesto nella pila 
+		currentContext = contexts[contexts.length-1];	//	5.aggiorno il contesto corrente
+		var c = await evalNode(_extract,currentContext);//	6.richiamo la 'evalNode' che valuterà il nodo passandgli il contesto corrente
+		a.push(c);										//	7.inserisco l'estratto nell' array
+		contexts.pop();									//	8.ho finito estraggo l'ultimo contesto che non mi serve più
+		currentContext = contexts[contexts.length-1];	//	9.aggiorno il contesto a quello precedente
 	}
 	return await a;
 }
@@ -217,18 +230,17 @@ function isForeach(obj) {
 	}
 	return false;
 }
-async function start() {
+async function main() {
 	browser = await browserOpener.open();
 	for(var i=0; i<test.length; i++) {
 		console.log("Testcase: " + (i+1) + "\nJSON aspettato:");
 		console.log(testCase.getResults()[i]);
-		var m = await main(test[i]);
+		var obj = await start(test[i]);
 		await console.log("JSON restituito: ");
-		console.log(JSON.stringify(m));
-//		console.log(m);
+		console.log(JSON.stringify(obj));
 	}
 	await browserCloser.close(browser);
 }
 (async () => {
-	start();
+	main();
 })();
