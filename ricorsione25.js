@@ -31,7 +31,7 @@ async function start(input) {
 	return output;
 }
 
-//valuta il tipo di azione dell' oggetto 'node'
+//valuta il tipo di azione dell'oggetto 'node'
 async function evalActionNode(node,currentContext) {
 	let url = node.open;
 	currentContext.page = await pageOpener.open(browser,url);
@@ -39,7 +39,7 @@ async function evalActionNode(node,currentContext) {
 	contexts.push(currentContext);
 }
 
-//se l'oggetto 'node' non è di tipo azione valuto il tipo di oggetto
+//se l'oggetto 'node' non è di tipo 'azione' valuto il tipo dell'oggetto 'scrape'
 async function evalNode(node,currentContext) {
 
 	//	identifico il tipo di nodo e richiamo la funzione opportuna per il suo tipo 
