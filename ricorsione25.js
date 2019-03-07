@@ -14,15 +14,15 @@ var arrayConstructor = [].constructor;
 var objectConstructor = {}.constructor;
 //---
 
-var browser; 	// browser (chromium, o altro) che verrà utilizzato per l'apertura delle pagine
+var browser;	//	browser (chromium, o altro) che verrà utilizzato per l'apertura delle pagine
 var contexts = [];	//	context contiene la pila di contesti(tipo la pagina, oppure un nodo della pagina), l'ultimo della pila sarà il contesto di valutazione corrente
-var currentContext = {}; // contesto inziale di partenza
-const test = testCase.getTestCase();	//Input: Array di input importati dalla funzione di supporto testCase
-let output;	//Output: oggetto terminale restituito
+var currentContext = {};	//	contesto inziale di partenza
+const test = testCase.getTestCase();	//	Input: Array di input importati dalla funzione di supporto testCase
+let output;	//	Output: oggetto terminale restituito
 
 async function start(input) {
 	output = {};
-	for(var i=0; i<input.length; i++) {		// itero l'input e valuto ogni nodo 
+	for(var i=0; i<input.length; i++) {		//	itero l'input e valuto ogni nodo 
 		if(isActionNode(input[i]))			//	verifico se è un nodo di tipo 'azione'
 			await evalActionNode(input[i],currentContext);		
 		if(isScraplNode(input[i]))			//	verifico se è un nodo di tipo 'scrape'
@@ -71,21 +71,21 @@ async function evalNode(node,currentContext) {
 }
 
 async function evalForEach(node,currentContext) {
-	var a = [];							//	array degli elementi estratti 
+	var a = [];	//	array degli elementi estratti 
 	var values = Object.values(node);	//	dati dal nodo, e cioè i valore di '_forEach_' e '_extract_'
-	var _for = values[0];				//	xpath nodo padre
-	var _extract = values[1]; 			//	oggetto '_extract_'
+	var _for = values[0];	//	xpath nodo padre
+	var _extract = values[1];	//	oggetto '_extract_'
 	var arrayElements = await currentContext.currentNode.$x(_for);	// query dell'elemento padre sulla pagina
 //	console.log(arrayElements.length);
-	for(var i=0; i<arrayElements.length; i++) {		//	itero tutti i nodi della pagina ottenuti tramite la query e li valuto
-		var context1 = {};							//	1.per ogni nodo della pagina creo un nuovo contesto su cui valutare 
+	for(var i=0; i<arrayElements.length; i++) {	//	itero tutti i nodi della pagina ottenuti tramite la query e li valuto
+		var context1 = {};	//	1.per ogni nodo della pagina creo un nuovo contesto su cui valutare 
 		context1.currentNode = arrayElements[i];	//	2.aggiorno l'emento nodo del contesto
-		context1.page = currentContext.page;		//	3.la pagina rimane la stessa
-		contexts.push(context1);					//	4.inserisco il contesto nella pila 
+		context1.page = currentContext.page;	//	3.la pagina rimane la stessa
+		contexts.push(context1);	//	4.inserisco il contesto nella pila 
 		currentContext = contexts[contexts.length-1];	//	5.aggiorno il contesto corrente
-		var c = await evalNode(_extract,currentContext);//	6.richiamo la 'evalNode' che valuterà il nodo passandogli il contesto corrente
-		a.push(c);										//	7.inserisco l'estratto nell' array
-		contexts.pop();									//	8.ho finito, estraggo l'ultimo contesto che non mi serve più
+		var c = await evalNode(_extract,currentContext);	//	6.richiamo la 'evalNode' che valuterà il nodo passandogli il contesto corrente
+		a.push(c);	//	7.inserisco l'estratto nell' array
+		contexts.pop();	//	8.ho finito, estraggo l'ultimo contesto che non mi serve più
 		currentContext = contexts[contexts.length-1];	//	9.aggiorno il contesto a quello precedente
 	}
 	return await a;
@@ -93,9 +93,9 @@ async function evalForEach(node,currentContext) {
 async function evalArray(node,currentContext) {
 //	console.log("evalArray:");
 //	console.log(node);
-	if(isSelectorStringArray(node)) {							//	verifico che si tratti di una struttura di tipo 'selettore Array'
-//		console.log("evalArry isSelector String:");				//	in questo caso avrò un unica stringa all'interno dell'array e quindi
-//		console.log(node);										//	valuto direttamente il valore atomico all'interno del contesto apportuno
+	if(isSelectorStringArray(node)) {	//	verifico che si tratti di una struttura di tipo 'selettore Array'
+//		console.log("evalArry isSelector String:");	//	in questo caso avrò un unica stringa all'interno dell'array e quindi
+//		console.log(node);	//	valuto direttamente il valore atomico all'interno del contesto apportuno
 		var out = [];
 		var array = await currentContext.currentNode.$x(node);
 		for(var j=0; j<array.length; j++) {
@@ -111,9 +111,9 @@ async function evalArray(node,currentContext) {
 		}
 		return await out;
 	}
-	else {														//	qualora non fosse un 'selettore Array', allora avrò un array					
-		var out = [];											//	di valori atomici(oppure oggetti o array) da valutare
-		for(var j=0; j<node.length; j++) {						//	all'interno del proprio contesto tramite 'evalNode'
+	else {	//	qualora non fosse un 'selettore Array', allora avrò un array					
+		var out = [];	//	di valori atomici(oppure oggetti o array) da valutare
+		for(var j=0; j<node.length; j++) {	//	all'interno del proprio contesto tramite 'evalNode'
 			var array = await currentContext.currentNode.$x(node[j]);
 			var context1 = {};
 			context1.currentNode = array[0];
@@ -135,24 +135,24 @@ async function evalObject(node,currentContext) {
 //	console.log(node);
 	var out = {};
 	var keys1 = Object.keys(node);
-	if(isForeach(node[keys1[0]]) ) {									//	verifico anzitutto se il nodo interno è di tipo '_forEach_'
-		return await evalNode(node[keys1[0]],currentContext);			//	in questo caso chiamo la funzione che mi valuta il nodo ed esco
+	if(isForeach(node[keys1[0]]) ) {	//	verifico anzitutto se il nodo interno è di tipo '_forEach_'
+		return await evalNode(node[keys1[0]],currentContext);	//	in questo caso chiamo la funzione che mi valuta il nodo ed esco
 	}
-	for(var j in keys1) {												//	altrimenti:
-		if(isObject(node[keys1[j]])) {									//	1.il nodo più interno è un oggetto, chiamo la funzione 'evalNode'
-//			console.log("IF");											//		e gli passo il nodo (quello interno al nodo corrente)
+	for(var j in keys1) {	//	altrimenti:
+		if(isObject(node[keys1[j]])) {	//	1.il nodo più interno è un oggetto, chiamo la funzione 'evalNode'
+//			console.log("IF");	//	e gli passo il nodo (quello interno al nodo corrente)
 			var obj = {};
 			obj = await evalNode(node[keys1[j]],currentContext);
 			out[keys1[j]] = obj;
 		}
-		else if(isArray(node[keys1[j]])) {								//	2.il nodo interno è un array quindi richiamo la 'evalNode' 
-//			console.log("IF");											//		passandogli il nodo interno che valuterà se si tratta 
-			var obj = {};												//		di un array(oppure di un selettore array)
+		else if(isArray(node[keys1[j]])) {	//	2.il nodo interno è un array quindi richiamo la 'evalNode' 
+//			console.log("IF");	//	passandogli il nodo interno che valuterà se si tratta 
+			var obj = {};	//	di un array(oppure di un selettore array)
 			obj = await evalNode(node[keys1[j]],currentContext);
 			out[keys1[j]] = obj;
 		}
-		else {															//	3.il nodo è un valore atomico quindi richiamo 'evalNode' 
-//			console.log("ELSE");										//		per valutarlo
+		else {	//	3.il nodo è un valore atomico quindi richiamo 'evalNode' 
+//			console.log("ELSE");	//	per valutarlo
 //			console.log(node[keys1[j]]);
 			var array = await currentContext.currentNode.$x(node[keys1[j]]);
 
@@ -172,8 +172,8 @@ async function evalAtomicValue(selector,currentContext) {
 //	console.log("evalAtomicValue:");
 //	console.log(selector);
 	try {
-		var d = await currentContext.page.evaluate(el => {		//	Ho trovato un selettore quindi lo valuto all'interno del suo contesto
-			return el.textContent;								// facendo una query sulla pagina
+		var d = await currentContext.page.evaluate(el => {	//	Ho trovato un selettore quindi lo valuto all'interno del suo contesto
+			return el.textContent;	//	facendo una query sulla pagina
 		},currentContext.currentNode);
 		return d;		
 	} catch (exception) {
