@@ -9,7 +9,7 @@ var browserCloser = require('./browserCloser');
 var testCase = require('./testCase.js');
 //---
 
-//--- variabili utili per il riconoscimento del tipo di oggetti (array, oggetto(JSON))
+//--- variabili utili per il riconoscimento del tipo di oggetti e selettori (array, oggetto(JSON))
 var arrayConstructor = [].constructor; 
 var objectConstructor = {}.constructor;
 //---
@@ -22,16 +22,16 @@ let output;	//Output: oggetto terminale restituito
 
 async function start(input) {
 	output = {};
-	for(var i=0; i<input.length; i++) {
-		if(isActionNode(input[i]))
-			await evalActionNode(input[i],currentContext);			
-		if(isScraplNode(input[i]))
-			output = await evalNode(input[i].scrape,currentContext);
+	for(var i=0; i<input.length; i++) {		// itero l'input e valuto ogni nodo 
+		if(isActionNode(input[i]))			//	verifico se è un nodo di tipo 'azione'
+			await evalActionNode(input[i],currentContext);		
+		if(isScraplNode(input[i]))			//	verifico se è un nodo di tipo 'scrape'
+			output = await evalNode(input[i].scrape,currentContext);	
 	}
 	return output;
 }
 
-//valuta il tipo di azione dell'oggetto 'node'
+//valuta il tipo di azione dell'oggetto 'nodoAzione'
 async function evalActionNode(node,currentContext) {
 	let url = node.open;
 	currentContext.page = await pageOpener.open(browser,url);
