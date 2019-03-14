@@ -112,7 +112,7 @@ const input5 = [
 		"name" : "//*[@class='hp__hotel-name']",
 		"address" : "//*[@class='\nhp_address_subtitle\njs-hp_address_subtitle\njq_tooltip\n']",
 		"rooms":{
-			"room":"./descendant-or-self::*[@class='jqrt togglelink']"}}}];
+			"room":["//descendant-or-self::*[@class='jqrt togglelink']"]}}}];
 var output5 = { "allrooms":
 	[ "'\n\nCamera Economy Matrimoniale/Doppia con Letti Singoli\n'",
 		"'\n\nCamera Familiare\n'",
@@ -289,6 +289,27 @@ const input8 = [{"open": "https://www.booking.com/hotel/it/holiday-inn-cosenza.i
 	{"allrooms":["./descendant-or-self::*[@class='jqrt togglelink']",
 		"./descendant-or-self::*[@class='jqrt togglelink']"]}}];
 
+const input9 = [{"open": "https://www.booking.com/hotel/it/holiday-inn-cosenza.it.html?label=gen173nr-1FCAEoggI46AdIM1gEaHGIAQGYARS4AQfIAQ_YAQHoAQH4AQuIAgGoAgM;sid=9e5a2f72fb374b24b8be4033628b9dd1;dest_id=-116404;dest_type=city;dist=0;hapos=1;hpos=1;room1=A%2CA;sb_price_type=total;sr_order=popularity;srepoch=1550836160;srpvid=c4ce532049eb0091;type=total;ucfs=1&#hotelTmpl"},
+	{"scrape":
+	{"allrooms":[["./descendant-or-self::*[@class='jqrt togglelink']"],
+		["./descendant-or-self::*[@class='jqrt togglelink']"]]}}];
+
+const input10 = [{"open": "https://it-it.facebook.com/salviniofficial/"},
+	{"scrape":
+	{"allfriend":["./descendant-or-self::*[@class='_2pie _14i5 _1qkq _1qkx']"]}}];
+const input11 = [{"open": "https://www.gazzetta.it/calcio/serie-a/classifica/"},
+	{"scrape":
+	{"allTeams":["./descendant-or-self::*[@class='sc-EHOje kqBPwW']"]}}];
+
+const input12 = [{"open":"https://www.booking.com"}, 
+	{"type":{"id":"#ss", "value":"Cosenza"}},
+	{"click":".sb-searchbox__button"},
+	{"wait":"#hotellist_inner"},
+	{"scrape":{
+		"_forEach_":"//*[@data-hotelid]",
+		"_extract_":{
+			"name":".//*[@class='sr-hotel__name\n'][1]"}}}];
+
 
 function main() {
 	pushTestCase(input1);	pushResult(output1);
@@ -297,8 +318,14 @@ function main() {
 	pushTestCase(input4);	pushResult(output4);
 	pushTestCase(input5);	pushResult(output5);
 	pushTestCase(input6);	pushResult(output6);
-	pushTestCase(input7);	pushResult(output7);
+//	pushTestCase(input7);	pushResult(output7);
 	pushTestCase(input8);	
+	pushTestCase(input9);	
+	pushTestCase(input10);	
+	pushTestCase(input11);	
+	pushTestCase(input12);	
+
+
 
 }
 function pushTestCase(input) {

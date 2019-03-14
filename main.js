@@ -18,10 +18,12 @@ const inputJson = [
 
 let url = inputDeparse.url(inputJson);
 let obj = inputDeparse.scrape(inputJson);
+//console.log(obj);
 
 (async () => {
 	let openBrowser = await browserOpener.open();
 	let openPage = await pageOpener.open(openBrowser,url);
+//	console.log(openPage);
 	let elementSelection =  await elementSelector.selection(obj,openPage);
 	let elementExtraction =  outputPrinter.print(elementSelection);
 	let closeBrowser = await browserCloser.close(openBrowser);
