@@ -33,42 +33,18 @@ async function evalActionNode(node,currentContext) {
 	if(Object.keys(node)=="click") {
 		await currentContext.page.click(node.click);
 	}
-
 }
-function isActionNode(obj) {
-	if(!isScraplNode(obj))
-		return true;
-	return false;
-}
-function isScraplNode(obj) {
-	if(Object.keys(obj)=="scrape")
-		return true;
-	return false;
-}
-
-module.exports.evalActionNode = evalActionNode;
-module.exports.isActionNode = isActionNode;
-module.exports.isScraplNode = isScraplNode;
-
-module.exports.evalNode = evalNode;
-module.exports.evalForEach = evalForEach;
-module.exports.evalArray = evalArray;
-module.exports.evalObject = evalObject;
-module.exports.evalAtomicValue = evalAtomicValue;
-
 
 //se l'oggetto 'node' non è di tipo 'azione' valuto il tipo dell'oggetto 'scrape'
 async function evalNode(node,currentContext) {
 
 	//identifico il tipo di nodo e richiamo la funzione opportuna per il suo tipo 
-
 	if (node === null) {
 		return null;
 	}
 	if(isForeach(node)) {
 //		console.log("evalNode isForEach:");
 //		console.log(node);
-
 		return await evalForEach(node,currentContext);
 	}
 	if(isObject(node)) {
@@ -79,12 +55,10 @@ async function evalNode(node,currentContext) {
 	if(isArray(node)) {
 //		console.log("evalNode isArray:");
 //		console.log(node);
-
 		return await evalArray(node,currentContext);
 	}
 //	console.log("evalNode is Atomic value:");
 //	console.log(node);
-
 	return await evalAtomicValue(node,currentContext);
 }
 
@@ -108,6 +82,7 @@ async function evalForEach(node,currentContext) {
 	}
 	return await a;
 }
+
 async function evalArray(node,currentContext) {
 //	console.log("evalArray:");
 //	console.log(node);
@@ -148,6 +123,7 @@ async function evalArray(node,currentContext) {
 
 
 }
+
 async function evalObject(node,currentContext) {
 //	console.log("evalObject");
 //	console.log(node);
@@ -186,6 +162,7 @@ async function evalObject(node,currentContext) {
 	}
 	return out;
 }
+
 async function evalAtomicValue(selector,currentContext) {
 //	console.log("evalAtomicValue:");
 //	console.log(selector);
@@ -199,6 +176,13 @@ async function evalAtomicValue(selector,currentContext) {
 	}
 }
 
+async function openBrowser() {
+	browser = await browserManager.openBrowser();
+}
+
+async function closeBrowser() {
+	await browserManager.closeBrowser(browser);
+}
 
 function isSelectorString(selector) {
 //	console.log("is selectorString:");
@@ -210,6 +194,7 @@ function isSelectorString(selector) {
 //	console.log("NO");
 	return false;
 }
+
 function isSelectorStringArray(selector) {
 //	console.log("is Selector String Arrray:");
 //	console.log(selector);
@@ -222,18 +207,32 @@ function isSelectorStringArray(selector) {
 	return false;
 }
 
+function isActionNode(obj) {
+	if(!isScraplNode(obj))
+		return true;
+	return false;
+}
+
+function isScraplNode(obj) {
+	if(Object.keys(obj)=="scrape")
+		return true;
+	return false;
+}
+
 function isObject(node) {
 	if (node.constructor === objectConstructor) {
 		return true;
 	}
 	return false;
 }
+
 function isArray(node) {
 	if (node.constructor === arrayConstructor) {
 		return true;
 	}
 	return false;
 }
+
 function isForeach(obj) {
 	if(Object.keys(obj)[0]=="_forEach_" && Object.keys(obj)[1]=="_extract_") {
 		return true;
@@ -241,11 +240,13 @@ function isForeach(obj) {
 	return false;
 }
 
-async function openBrowser() {
-	browser = await browserManager.openBrowser();
-}
-async function closeBrowser() {
-	await browserManager.closeBrowser(browser);
-}
 module.exports.openBrowser = openBrowser;
 module.exports.closeBrowser = closeBrowser;
+module.exports.evalActionNode = evalActionNode;
+module.exports.isActionNode = isActionNode;
+module.exports.isScraplNode = isScraplNode;
+module.exports.evalNode = evalNode;
+module.exports.evalForEach = evalForEach;
+module.exports.evalArray = evalArray;
+module.exports.evalObject = evalObject;
+module.exports.evalAtomicValue = evalAtomicValue;
