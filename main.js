@@ -4,7 +4,7 @@
 
 //--- import funzioni di supporto
 var testCase = require('./testCase');
-var manager = require('./manager');
+var scraplManager = require('./scraplManager');
 //---
 
 var currentContext = {};	//contesto inziale di partenza
@@ -14,17 +14,17 @@ let output;	//Output: oggetto terminale restituito
 async function start(input) {
 	output = {};
 	for(var i=0; i<input.length; i++) {		//itero l'input e valuto ogni nodo 
-		if(manager.isActionNode(input[i]))			//verifico se è un nodo di tipo 'azione'
-			await manager.evalActionNode(input[i],currentContext);
-		if(manager.isScraplNode(input[i]))			//verifico se è un nodo di tipo 'scrape'
-			output = await manager.evalNode(input[i].scrape,currentContext);	
+		if(scraplManager.isActionNode(input[i]))			//verifico se è un nodo di tipo 'azione'
+			await scraplManager.evalActionNode(input[i],currentContext);
+		if(scraplManager.isScraplNode(input[i]))			//verifico se è un nodo di tipo 'scrape'
+			output = await scraplManager.evalNode(input[i].scrape,currentContext);	
 	}
 	return output;
 }
 
 
 async function main() {
-	await manager.openBrowser();
+	await scraplManager.openBrowser();
 	for(var i=0; i<test.length; i++) {
 		console.log("Testcase: " + (i+1) + "\nJSON aspettato:");
 		console.log(testCase.getResults()[i]);
@@ -32,7 +32,7 @@ async function main() {
 		await console.log("JSON restituito: ");
 		console.log(JSON.stringify(obj));
 	}
-	await manager.closeBrowser();
+	await scraplManager.closeBrowser();
 }
 (async () => {
 	main();

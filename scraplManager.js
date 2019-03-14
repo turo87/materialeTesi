@@ -120,8 +120,6 @@ async function evalArray(node,currentContext) {
 		}
 		return await out;
 	}
-
-
 }
 
 async function evalObject(node,currentContext) {
