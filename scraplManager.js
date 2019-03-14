@@ -2,11 +2,7 @@
  * 
  */
 var browserManager = require('./browserManager');
-
-//--- variabili utili per il riconoscimento del tipo di oggetti e selettori (array, oggetto(JSON))
-var arrayConstructor = [].constructor; 
-var objectConstructor = {}.constructor;
-//---
+var objectIdentifier = require('./objectIdentifier');
 
 var browser;	//browser (chromium, o altro) che verrà utilizzato per l'apertura delle pagine
 var contexts = [];	//context contiene la pila di contesti(tipo la pagina, oppure un nodo della pagina), l'ultimo della pila sarà il contesto di valutazione corrente
@@ -42,17 +38,17 @@ async function evalNode(node,currentContext) {
 	if (node === null) {
 		return null;
 	}
-	if(isForeach(node)) {
+	if(objectIdentifier.isForeach(node)) {
 //		console.log("evalNode isForEach:");
 //		console.log(node);
 		return await evalForEach(node,currentContext);
 	}
-	if(isObject(node)) {
+	if(objectIdentifier.isObject(node)) {
 //		console.log("evalNode isObject:");
 //		console.log(node);
 		return await evalObject(node,currentContext);		
 	}
-	if(isArray(node)) {
+	if(objectIdentifier.isArray(node)) {
 //		console.log("evalNode isArray:");
 //		console.log(node);
 		return await evalArray(node,currentContext);
@@ -86,7 +82,7 @@ async function evalForEach(node,currentContext) {
 async function evalArray(node,currentContext) {
 //	console.log("evalArray:");
 //	console.log(node);
-	if(isSelectorStringArray(node)) {	//verifico che si tratti di una struttura di tipo 'selettore Array'
+	if(objectIdentifier.isSelectorStringArray(node)) {	//verifico che si tratti di una struttura di tipo 'selettore Array'
 //		console.log("evalArry isSelector String:");	//in questo caso avrò un unica stringa all'interno dell'array e quindi
 //		console.log(node);	//valuto direttamente il valore atomico all'interno del contesto apportuno
 		var out = [];
@@ -127,17 +123,17 @@ async function evalObject(node,currentContext) {
 //	console.log(node);
 	var out = {};
 	var keys1 = Object.keys(node);
-	if(isForeach(node[keys1[0]]) ) {	//verifico anzitutto se il nodo interno è di tipo '_forEach_'
+	if(objectIdentifier.isForeach(node[keys1[0]]) ) {	//verifico anzitutto se il nodo interno è di tipo '_forEach_'
 		return await evalNode(node[keys1[0]],currentContext);	//in questo caso chiamo la funzione che mi valuta il nodo ed esco
 	}
 	for(var j in keys1) {	//altrimenti:
-		if(isObject(node[keys1[j]])) {	//1.il nodo più interno è un oggetto, chiamo la funzione 'evalNode'
+		if(objectIdentifier.isObject(node[keys1[j]])) {	//1.il nodo più interno è un oggetto, chiamo la funzione 'evalNode'
 //			console.log("IF");	//e gli passo il nodo (quello interno al nodo corrente)
 			var obj = {};
 			obj = await evalNode(node[keys1[j]],currentContext);
 			out[keys1[j]] = obj;
 		}
-		else if(isArray(node[keys1[j]])) {	//2.il nodo interno è un array quindi richiamo la 'evalNode' 
+		else if(objectIdentifier.isArray(node[keys1[j]])) {	//2.il nodo interno è un array quindi richiamo la 'evalNode' 
 //			console.log("IF");	//passandogli il nodo interno che valuterà se si tratta 
 			var obj = {};	//di un array(oppure di un selettore array)
 			obj = await evalNode(node[keys1[j]],currentContext);
@@ -179,30 +175,7 @@ async function openBrowser() {
 }
 
 async function closeBrowser() {
-	await browserManager.closeBrowser(browser);
-}
-
-function isSelectorString(selector) {
-//	console.log("is selectorString:");
-//	console.log(selector);
-	if (!isSelectorStringArray(selector)) {
-//		console.log("YES");
-		return true;
-	}
-//	console.log("NO");
-	return false;
-}
-
-function isSelectorStringArray(selector) {
-//	console.log("is Selector String Arrray:");
-//	console.log(selector);
-//	console.log(selector.length);
-	if (selector.constructor === arrayConstructor && selector.length == 1 ) {
-//		console.log("YES");
-		return true;
-	}
-//	console.log("NO");
-	return false;
+	await browserManager.close(browser);
 }
 
 function isActionNode(obj) {
@@ -217,34 +190,9 @@ function isScraplNode(obj) {
 	return false;
 }
 
-function isObject(node) {
-	if (node.constructor === objectConstructor) {
-		return true;
-	}
-	return false;
-}
-
-function isArray(node) {
-	if (node.constructor === arrayConstructor) {
-		return true;
-	}
-	return false;
-}
-
-function isForeach(obj) {
-	if(Object.keys(obj)[0]=="_forEach_" && Object.keys(obj)[1]=="_extract_") {
-		return true;
-	}
-	return false;
-}
-
 module.exports.openBrowser = openBrowser;
 module.exports.closeBrowser = closeBrowser;
-module.exports.evalActionNode = evalActionNode;
 module.exports.isActionNode = isActionNode;
 module.exports.isScraplNode = isScraplNode;
+module.exports.evalActionNode = evalActionNode;
 module.exports.evalNode = evalNode;
-module.exports.evalForEach = evalForEach;
-module.exports.evalArray = evalArray;
-module.exports.evalObject = evalObject;
-module.exports.evalAtomicValue = evalAtomicValue;

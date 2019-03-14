@@ -312,17 +312,17 @@ const input12 = [{"open":"https://www.booking.com"},
 
 
 function main() {
-	pushTestCase(input1);	pushResult(output1);
-	pushTestCase(input2);	pushResult(output2);
-	pushTestCase(input3);	pushResult(output3);
-	pushTestCase(input4);	pushResult(output4);
-	pushTestCase(input5);	pushResult(output5);
-	pushTestCase(input6);	pushResult(output6);
+//	pushTestCase(input1);	pushResult(output1);
+//	pushTestCase(input2);	pushResult(output2);
+//	pushTestCase(input3);	pushResult(output3);
+//	pushTestCase(input4);	pushResult(output4);
+//	pushTestCase(input5);	pushResult(output5);
+//	pushTestCase(input6);	pushResult(output6);
 //	pushTestCase(input7);	pushResult(output7);
-	pushTestCase(input8);	
-	pushTestCase(input9);	
-	pushTestCase(input10);	
-	pushTestCase(input11);	
+//	pushTestCase(input8);	
+//	pushTestCase(input9);	
+//	pushTestCase(input10);	
+//	pushTestCase(input11);	
 	pushTestCase(input12);	
 
 
