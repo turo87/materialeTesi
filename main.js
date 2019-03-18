@@ -22,7 +22,6 @@ async function start(input) {
 	return output;
 }
 
-
 async function main() {
 	await scraplManager.openBrowser();
 	for(var i=0; i<test.length; i++) {

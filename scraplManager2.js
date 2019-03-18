@@ -22,7 +22,6 @@ async function evalActionNode(node,currentContext) {
 		if(keys[0]=="id" && keys[1]=="value") {
 			if(isStringSelectorCSS(node.type.id)) {
 				await currentContext.page.type(node.type.id, node.type.value);
-				console.log("type");
 			}
 			else {
 				var a = await currentContext.page.$x(node.type.id);
@@ -35,13 +34,12 @@ async function evalActionNode(node,currentContext) {
 			await currentContext.page.waitForSelector(node.waitUntilPresent);
 		}
 		else {
-			await currentContext.page.waitForXPath(node.waitUntilPresent);
+			currentContext.page.waitForXPath(node.waitUntilPresent);
 		}
 	}
 	if(Object.keys(node)=="click") {
 		if(isStringSelectorCSS(node.click)) {
-			await currentContext.page.click(node.click);
-			console.log("CLICK");
+			await currentContext.page.click(node.click);			
 		}
 		else {
 			var a = await currentContext.page.$x(node.click);
@@ -78,91 +76,97 @@ async function evalNode(node,currentContext) {
 }
 
 async function evalForEach(node,currentContext) {
-	console.log("eval FOR EACH");
 	var a = [];	//array degli elementi estratti 
 	var values = Object.values(node);	//dati dal nodo, e cioè i valori di '_forEach_' e '_extract_'
 	var _for = values[0];	//xpath nodo padre
-	console.log(_for);
 	var _extract = values[1];	//oggetto '_extract_'
-	if(!isStringSelectorCSS(_for)) {		
+	if(isStringSelectorCSS(_for)) {		
 		var arrayElements = await currentContext.currentNode.$x(_for);	//query dell'elemento padre sulla pagina
+//		console.log(arrayElements.length);
+		for(var i=0; i<arrayElements.length; i++) {	//itero tutti i nodi della pagina ottenuti tramite la query e li valuto
+			var context1 = {};	//1.per ogni nodo della pagina creo un nuovo contesto su cui valutare 
+			context1.currentNode = arrayElements[i];	//2.aggiorno l'emento nodo del contesto
+			context1.page = currentContext.page;	//3.la pagina rimane la stessa
+			contexts.push(context1);	//4.inserisco il contesto nella pila 
+			currentContext = contexts[contexts.length-1];	//5.aggiorno il contesto corrente
+			var c = await evalNode(_extract,currentContext);	//6.richiamo la 'evalNode' che valuterà il nodo passandogli il contesto corrente
+			a.push(c);	//7.inserisco l'estratto nell' array
+			contexts.pop();	//8.ho finito, estraggo l'ultimo contesto che non mi serve più
+			currentContext = contexts[contexts.length-1];	//9.aggiorno il contesto a quello precedente
+		}
 	}
 	else {
-		var arrayElements = await currentContext.currentNode.$$(_for);
-	}
-//	console.log(arrayElements.length);
-	for(var i=0; i<arrayElements.length; i++) {	//itero tutti i nodi della pagina ottenuti tramite la query e li valuto
-//		console.log("FOR");
-//		console.log(arrayElements[i]);
-		var context1 = {};	//1.per ogni nodo della pagina creo un nuovo contesto su cui valutare 
-		context1.currentNode = arrayElements[i];	//2.aggiorno l'emento nodo del contesto
-		context1.page = currentContext.page;	//3.la pagina rimane la stessa
-		contexts.push(context1);	//4.inserisco il contesto nella pila 
-		currentContext = contexts[contexts.length-1];	//5.aggiorno il contesto corrente
-		var c = await evalNode(_extract,currentContext);	//6.richiamo la 'evalNode' che valuterà il nodo passandogli il contesto corrente
-		a.push(c);	//7.inserisco l'estratto nell' array
-		contexts.pop();	//8.ho finito, estraggo l'ultimo contesto che non mi serve più
-		currentContext = contexts[contexts.length-1];	//9.aggiorno il contesto a quello precedente
-	}
+		console.log("else");
+		let hotelData = await currentContext.page.evaluate(() => {
+			let hotels = [];
+			// get the hotel elements
+			let hotelsElms = currentContext.currentNode.querySelectorAll('div.sr_item_default[data-hotelid]');
 
-//	for(var i=0; i<arrayElements.length; i++) {
-//	var c = await arrayElements[i].$eval(_extract.name , el => el.innerText);
-//	console.log(c);
-//	}
+			// get the hotel data
+			hotelsElms.forEach((hotelelement) => {
+				let hotelJson = {};
+				try {
+					hotelJson.name = hotelelement.querySelector('span.sr-hotel__name').innerText;
+				}
+				catch (exception){
 
+				}
+				hotels.push(hotelJson);
+			});
+			return hotels;
+		});
+
+
+//		var arrayElements = currentContext..querySelectorAll(_for);
+//		for(var i=0; i<arrayElements.length; i++) {	//itero tutti i nodi della pagina ottenuti tramite la query e li valuto
+//		var context1 = {};	//1.per ogni nodo della pagina creo un nuovo contesto su cui valutare 
+//		context1.currentNode = arrayElements[i];	//2.aggiorno l'emento nodo del contesto
+//		context1.page = currentContext.page;	//3.la pagina rimane la stessa
+//		contexts.push(context1);	//4.inserisco il contesto nella pila 
+//		currentContext = contexts[contexts.length-1];	//5.aggiorno il contesto corrente
+//		var c = currentContext.currentNode.querySelector(selector).innerText;	//6.richiamo la 'evalNode' che valuterà il nodo passandogli il contesto corrente
+//		a.push(c);	//7.inserisco l'estratto nell' array
+//		contexts.pop();	//8.ho finito, estraggo l'ultimo contesto che non mi serve più
+//		currentContext = contexts[contexts.length-1];	//9.aggiorno il contesto a quello precedente
+//		}
+	}
 	return await a;
 }
 
 async function evalArray(node,currentContext) {
-	console.log("evalArray:");
-	console.log(node);
-	var out = [];
+//	console.log("evalArray:");
+//	console.log(node);
 	if(objectIdentifier.isSelectorStringArray(node)) {	//verifico che si tratti di una struttura di tipo 'selettore Array'
-		//in questo caso avrò un unica stringa all'interno dell'array e quindi
+//		console.log("evalArry isSelector String:");	//in questo caso avrò un unica stringa all'interno dell'array e quindi
 //		console.log(node);	//valuto direttamente il valore atomico all'interno del contesto apportuno
-		if(!isStringSelectorCSS(node[0])) {
-			var array = await currentContext.currentNode.$x(node);
-			for(var j=0; j<array.length; j++) {
-				var context1 = {};
-				context1.currentNode = array[j];
-				context1.page = currentContext.page;
-				contexts.push(context1);
-				currentContext = contexts[contexts.length-1];
-				var c = await evalNode(node[0], currentContext);
-				out.push(c);
-				contexts.pop();
-				currentContext = contexts[contexts.length-1];
-			}
-		}
-		else {
-			var array =  await currentContext.page.$$eval(node[0], nodes => nodes.map(n => n.innerText));
-			for(var j=0; j<array.length; j++)
-				out.push(array[j]);
+		var out = [];
+		var array = await currentContext.currentNode.$x(node);
+		for(var j=0; j<array.length; j++) {
+			var context1 = {};
+			context1.currentNode = array[j];
+			context1.page = currentContext.page;
+			contexts.push(context1);
+			currentContext = contexts[contexts.length-1];
+			var c = await evalNode(node[0], currentContext);
+			out.push(c);
+			contexts.pop();
+			currentContext = contexts[contexts.length-1];
 		}
 		return await out;
 	}
-
-	else {
-		console.log("ELSE");
-		//qualora non fosse un 'selettore Array', allora avrò un array					
-		//di valori atomici(oppure oggetti o array) da valutare
+	else {	//qualora non fosse un 'selettore Array', allora avrò un array					
+		var out = [];	//di valori atomici(oppure oggetti o array) da valutare
 		for(var j=0; j<node.length; j++) {	//all'interno del proprio contesto tramite 'evalNode'
-			if(!isStringSelectorCSS(node[j])) {
-				var array = await currentContext.currentNode.$x(node[j]);
-				var context1 = {};
-				context1.currentNode = array[0];
-				context1.page = currentContext.page;
-				contexts.push(context1);
-				currentContext = contexts[contexts.length-1];
-				var c = await evalNode(node[j], currentContext);
-				out.push(c);
-				contexts.pop();
-				currentContext = contexts[contexts.length-1];
-			}
-			else {
-				var c = await evalNode(node[j], currentContext);
-				out.push(c);
-			}
+			var array = await currentContext.currentNode.$x(node[j]);
+			var context1 = {};
+			context1.currentNode = array[0];
+			context1.page = currentContext.page;
+			contexts.push(context1);
+			currentContext = contexts[contexts.length-1];
+			var c = await evalNode(node[j], currentContext);
+			out.push(c);
+			contexts.pop();
+			currentContext = contexts[contexts.length-1];
 		}
 		return await out;
 	}
@@ -192,19 +196,16 @@ async function evalObject(node,currentContext) {
 		else {	//3.il nodo è un valore atomico quindi richiamo 'evalNode' 
 //			console.log("ELSE");	//per valutarlo
 //			console.log(node[keys1[j]]);
-			if(!isStringSelectorCSS(node[keys1[j]])) {
-				var array = await currentContext.currentNode.$x(node[keys1[j]]);
-				var context1 = {};
-				context1.currentNode = array[0];
-				context1.page = currentContext.page;
-				contexts.push(context1);
-				currentContext = contexts[contexts.length-1];
-				out[keys1[j]] = await evalNode(node[keys1[j]],currentContext);
-				contexts.pop();
-				currentContext = contexts[contexts.length-1];
-			}
-			else
-				out[keys1[j]] = await evalNode(node[keys1[j]],currentContext);
+			var array = await currentContext.currentNode.$x(node[keys1[j]]);
+
+			var context1 = {};
+			context1.currentNode = array[0];
+			context1.page = currentContext.page;
+			contexts.push(context1);
+			currentContext = contexts[contexts.length-1];
+			out[keys1[j]] = await evalNode(node[keys1[j]],currentContext);
+			contexts.pop();
+			currentContext = contexts[contexts.length-1];
 		}
 	}
 	return out;
@@ -224,14 +225,12 @@ async function evalAtomicValue(selector,currentContext) {
 		}
 	}
 	else {
-		try {
-//			console.log("innerTEXT: ");
-//			console.log(currentContext.currentNode);
-			var c = await currentContext.currentNode.$eval(selector , el => el.innerText);
-			return c;
-		} catch (exception) {
-			return null;
-		}
+		console.log("innerTEXT: ");
+
+		var c = currentContext.currentNode.querySelector(selector).innerText;
+		console.log("innerTEXT: ");
+		console.log(c);
+		return c;
 	}
 }
 
@@ -256,38 +255,10 @@ function isScraplNode(obj) {
 }
 
 function isStringSelectorCSS(obj) {
-
-//	if(objectIdentifier.isSelectorStringArray(obj)) {
-//	return isStringSelectorCSS(obj[0]);
-//	}
-
-//	console.log("isStringSelectorCSS");
-//	console.log(obj);
 	if(obj[0]=='/')
 		return false;
 	if(obj[0]=='.' && obj[1]=='/')
 		return false;
-	if(obj[0]=='[' && obj[1]=='"' && obj[2]=='/')
-		return false;
-	if(obj[0]=='[' && obj[1]=="'" && obj[2]=='/')
-		return false;
-	if(obj[0]=='[' && obj[1]=="'" && obj[2]=='.' && obj[3]=='/')
-		return false;
-	if(obj[0]=='[' && obj[1]=='"' && obj[2]=='.' && obj[3]=='/')
-		return false;
-
-
-	if(obj[0]=='"' && obj[1]=='/')
-		return false;
-	if(obj[0]=="'" && obj[1]=='/')
-		return false;
-	if(obj[0]=="'" && obj[1]=='.' && obj[2]=='/')
-		return false;
-	if(obj[0]=='"' && obj[1]=='.' && obj[2]=='/')
-		return false;
-
-
-
 	return true;
 }
 

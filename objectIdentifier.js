@@ -19,14 +19,16 @@ function isSelectorString(selector) {
 }
 
 function isSelectorStringArray(selector) {
-//	console.log("is Selector String Arrray:");
-//	console.log(selector);
-//	console.log(selector.length);
-	if (selector.constructor === arrayConstructor && selector.length == 1 ) {
-//		console.log("YES");
+	console.log("is Selector String Arrray:");
+	console.log(selector);
+	console.log(selector.length);
+
+	if (selector.constructor === arrayConstructor && selector.length == 1  
+			&& (typeof selector[0] === 'string' || selector[0] instanceof String)) {
+		console.log("YES");
 		return true;
 	}
-//	console.log("NO");
+	console.log("NO");
 	return false;
 }
 
