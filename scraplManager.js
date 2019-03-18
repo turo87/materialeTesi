@@ -22,7 +22,6 @@ async function evalActionNode(node,currentContext) {
 		if(keys[0]=="id" && keys[1]=="value") {
 			if(isStringSelectorCSS(node.type.id)) {
 				await currentContext.page.type(node.type.id, node.type.value);
-				console.log("type");
 			}
 			else {
 				var a = await currentContext.page.$x(node.type.id);
@@ -41,7 +40,6 @@ async function evalActionNode(node,currentContext) {
 	if(Object.keys(node)=="click") {
 		if(isStringSelectorCSS(node.click)) {
 			await currentContext.page.click(node.click);
-			console.log("CLICK");
 		}
 		else {
 			var a = await currentContext.page.$x(node.click);
@@ -78,11 +76,11 @@ async function evalNode(node,currentContext) {
 }
 
 async function evalForEach(node,currentContext) {
-	console.log("eval FOR EACH");
+//	console.log("eval FOR EACH");
 	var a = [];	//array degli elementi estratti 
 	var values = Object.values(node);	//dati dal nodo, e cioè i valori di '_forEach_' e '_extract_'
 	var _for = values[0];	//xpath nodo padre
-	console.log(_for);
+//	console.log(_for);
 	var _extract = values[1];	//oggetto '_extract_'
 	if(!isStringSelectorCSS(_for)) {		
 		var arrayElements = await currentContext.currentNode.$x(_for);	//query dell'elemento padre sulla pagina
@@ -114,8 +112,8 @@ async function evalForEach(node,currentContext) {
 }
 
 async function evalArray(node,currentContext) {
-	console.log("evalArray:");
-	console.log(node);
+//	console.log("evalArray:");
+//	console.log(node);
 	var out = [];
 	if(objectIdentifier.isSelectorStringArray(node)) {	//verifico che si tratti di una struttura di tipo 'selettore Array'
 		//in questo caso avrò un unica stringa all'interno dell'array e quindi
@@ -143,7 +141,7 @@ async function evalArray(node,currentContext) {
 	}
 
 	else {
-		console.log("ELSE");
+//		console.log("ELSE");
 		//qualora non fosse un 'selettore Array', allora avrò un array					
 		//di valori atomici(oppure oggetti o array) da valutare
 		for(var j=0; j<node.length; j++) {	//all'interno del proprio contesto tramite 'evalNode'
