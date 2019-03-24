@@ -25,10 +25,7 @@ async function start(input) {
 async function main() {
 	await scraplManager.openBrowser();
 	for(var i=0; i<test.length; i++) {
-		console.log("Testcase: " + (i+1) + "\nJSON aspettato:");
-		console.log(testCase.getResults()[i]);
 		var obj = await start(test[i]);
-		await console.log("JSON restituito: ");
 		console.log(JSON.stringify(obj));
 	}
 	await scraplManager.closeBrowser();

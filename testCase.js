@@ -76,21 +76,16 @@ const input4 = [
 		"open": "https://coinmarketcap.com/it/"
 	},
 	{
-		"scrape": 
-		{
-			"coins": 
-			{
+		"scrape" : {
+			"coins": {
 				"_forEach_" : "//table[@id='currencies']/tbody/tr",
-				"_extract_" : 
-				{
+				"_extract_" : {
 					"ranking" : "./td[1]",
 					"name" : "./td[2]/a",
-					"performance" : 
-					{
+					"performance" : {
 						"marketcap$" : "./td[3]/text()",
 						"price" : "./td[4]",
-						"last24h" : 
-						{
+						"last24h" : {
 							"circulatingSupply" : "./td[5]",
 							"change" : "./td[6]"
 						}
@@ -103,7 +98,7 @@ const output4 = { "coins": {
 	"ranking" : "",
 	"name" : "",
 	"performance" : {
-		"marketcap" : "",
+		"marketcap$" : "",
 		"price" : "",
 		"last24h" : ""
 	}
@@ -225,14 +220,19 @@ const input13 = [
 		"click" : "//a[text()='View All']"
 	}];
 
-const input14 = [{"open":"https://www.booking.com/searchresults.it.html?label=gen173nr-1DCAEoggI46AdIM1gEaHGIAQGYARS4AQfIAQzYAQPoAQGIAgGoAgO4AqPduuQFwAIB&sid=2f11f0f3ad146f3a648faa7e038f74a0&sb=1&src=index&src_elem=sb&error_url=https%3A%2F%2Fwww.booking.com%2Findex.it.html%3Flabel%3Dgen173nr-1DCAEoggI46AdIM1gEaHGIAQGYARS4AQfIAQzYAQPoAQGIAgGoAgO4AqPduuQFwAIB%3Bsid%3D2f11f0f3ad146f3a648faa7e038f74a0%3Bsb_price_type%3Dtotal%26%3B&ss=Cosenza&is_ski_area=0&ssne=Cosenza&ssne_untouched=Cosenza&dest_id=-116404&dest_type=city&checkin_year=&checkin_month=&checkout_year=&checkout_month=&no_rooms=1&group_adults=2&group_children=0&b_h4u_keep_filters=&from_sf=1"}, 
-//	{"type":{"id":"#ss", "value":"Cosenza"}},
-//	{"click":".sb-searchbox__button"},
-//	{"waitUntilPresent":"#hotellist_inner"},
-	{"scrape":{
-		"_forEach_":"div.sr_item_default[data-hotelid]",
-		"_extract_":{
-			"name":"span.sr-hotel__name"}}}];
+const input14 = [{"open":"https://www.booking.com"}, 
+	{ "type" : {
+		"id" : "#ss",
+		"value" : "Cosenza" } },
+		{ "click" : ".sb-searchbox__button" },
+		{ "waitUntilPresent" : "#hotellist_inner" },
+		{ "scrape" : {
+			"hotels" : {
+				"_forEach_" : "div.sr_item_default[data-hotelid]",
+				"_extract_" : {
+					"name" : "span.sr-hotel__name",
+					"review" : ".bui-review-score__badge" } } } }
+		];
 
 
 
@@ -276,24 +276,24 @@ const input17 = [{"open": "https://www.booking.com/hotel/it/holiday-inn-cosenza.
 
 
 function main() {
-	pushTestCase(input1);	pushResult(output1);
-	pushTestCase(input2);	pushResult(output2);
-	pushTestCase(input3);	pushResult(output3);
-	pushTestCase(input4);	pushResult(output4);
-	pushTestCase(input5);	pushResult(output5);
-	pushTestCase(input6);	pushResult(output6);
+//	pushTestCase(input1);	pushResult(output1);
+//	pushTestCase(input2);	pushResult(output2);
+//	pushTestCase(input3);	pushResult(output3);
+//	pushTestCase(input4);	pushResult(output4);
+//	pushTestCase(input5);	pushResult(output5);
+//	pushTestCase(input6);	pushResult(output6);
 
-	pushTestCase(input8);	
-	pushTestCase(input9);	
-	pushTestCase(input10);	
-	pushTestCase(input11);	
-	pushTestCase(input12);	
-	pushTestCase(input13);
+//	pushTestCase(input8);	
+//	pushTestCase(input9);	
+//	pushTestCase(input10);	
+//	pushTestCase(input11);	
+//	pushTestCase(input12);	
+//	pushTestCase(input13);
 
 	pushTestCase(input14);	
-	pushTestCase(input15);	
-	pushTestCase(input16);	
-	pushTestCase(input17);	
+//	pushTestCase(input15);	
+//	pushTestCase(input16);	
+//	pushTestCase(input17);	
 
 
 }
