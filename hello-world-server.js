@@ -16,10 +16,8 @@ server.on('request', async (req, res) => {
 	if(req.url === '/home' || req.url === '/') {
 		res.writeHead(200, {'Content-Type': 'text/html'});
 		fs.createReadStream(__dirname + "/index.jsp").pipe(res);
-		console.log("home");
 	}
 	else if(req.method == "POST") {
-		console.log("POST");
 		await req.pipe(map(function(chunk) {
 			var a = decodeURIComponent(chunk.toString().trim());
 			var b = a.substr(6,a.length);
@@ -31,7 +29,6 @@ server.on('request', async (req, res) => {
 			return decodeURIComponent(chunk.toString().trim());
 		}));
 		const data = await someAsyncFunc();
-		await console.log("DATA: " + JSON.stringify(data));
 		await res.writeHead(200, {'Content-Type': 'text/html'});
 		await res.write(JSON.stringify(data,undefined,2));
 		await res.end();

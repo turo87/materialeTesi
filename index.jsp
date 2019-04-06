@@ -146,7 +146,7 @@ p {
 </head>
 <body onload="fff()">
 
-	<h1>Welcome to Scrapy</h1>
+	<h1>Welcome to Scrapl</h1>
 	<p>You won't find a scraper better anywhere else</p>
 	<div>
 		<img class="immagine1"

@@ -37,8 +37,8 @@ function hex2a(hexx) {
 }
 
 async function main(inp) {
-	console.log("inp MAIN: ");
-	console.log(inp);
+//	console.log("inp MAIN: ");
+//	console.log(inp);
 	var s1 = inp.substr(7, inp.length);
 //	console.log(s1);
 
@@ -47,7 +47,7 @@ async function main(inp) {
 	for(var i=0; i<split.length; i++) {
 		c += split[i].trim();
 	}
-	console.log( "MAIN: " + c);
+//	console.log( "MAIN: " + c);
 
 	await scraplManager.openBrowser();
 	var obj = await start(JSON.parse(c));
