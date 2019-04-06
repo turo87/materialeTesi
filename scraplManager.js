@@ -20,6 +20,7 @@ async function evalActionNode(node,currentContext) {
 		var objType = Object.values(node);
 		var keys = Object.keys(node.type);
 		if(keys[0]=="id" && keys[1]=="value") {
+			console.log("typing : " + node.type.value);
 			if(isStringSelectorCSS(node.type.id)) {
 				await currentContext.page.type(node.type.id, node.type.value);
 			}
@@ -30,6 +31,7 @@ async function evalActionNode(node,currentContext) {
 		}
 	}
 	if(Object.keys(node)=="waitUntilPresent") {
+		console.log("waiting until present:" + node.waitUntilPresent);
 		if(isStringSelectorCSS(node.waitUntilPresent)) {
 			await currentContext.page.waitForSelector(node.waitUntilPresent);
 		}
@@ -38,6 +40,7 @@ async function evalActionNode(node,currentContext) {
 		}
 	}
 	if(Object.keys(node)=="click") {
+		console.log("clicking: " + node.click);
 		if(isStringSelectorCSS(node.click)) {
 			await currentContext.page.click(node.click);
 		}
@@ -50,7 +53,7 @@ async function evalActionNode(node,currentContext) {
 
 //se l'oggetto 'node' non è di tipo 'azione' valuto il tipo dell'oggetto 'scrape'
 async function evalNode(node,currentContext) {
-
+	
 	//identifico il tipo di nodo e richiamo la funzione opportuna per il suo tipo 
 	if (node === null) {
 		return null;

@@ -73,7 +73,7 @@ var output3 = { allhotel:
 
 const input4 = [
 	{
-		"open": "https://coinmarketcap.com/it/"
+		"open": "https://coinmarketcap.com"
 	},
 	{
 		"scrape" : {
@@ -209,16 +209,6 @@ const input12 = [{"open":"https://www.booking.com"},
 		"_extract_":{
 			"name":".//*[@class='sr-hotel__name\n'][1]"}}}];
 
-const input13 = [
-	{
-		"open":"https://www.coinmarketcap.com"
-	},
-	{
-		"waitUntilPresent" : "//table[@id='currencies']"
-	},
-	{
-		"click" : "//a[text()='View All']"
-	}];
 
 const input14 = [{"open":"https://www.booking.com"}, 
 	{ "type" : {
@@ -287,10 +277,10 @@ function main() {
 //	pushTestCase(input9);	
 //	pushTestCase(input10);	
 //	pushTestCase(input11);	
-//	pushTestCase(input12);	
+	pushTestCase(input12);	
 //	pushTestCase(input13);
 
-	pushTestCase(input14);	
+//	pushTestCase(input14);	
 //	pushTestCase(input15);	
 //	pushTestCase(input16);	
 //	pushTestCase(input17);	
